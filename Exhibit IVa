@@ -1,0 +1,85 @@
+Exhibit IVa = 
+VAR GFRevenue = 
+CALCULATETABLE(
+    SELECTCOLUMNS(
+        FY24_BUDGET,
+        "Fund", "General Fund",
+        "Fiscal Year", FY24_BUDGET[Fiscal Year],
+        "GL Accounts", FY24_BUDGET[GL Accounts],
+        "Amount", -FY24_BUDGET[Amount]
+    ),
+    MID(FY24_BUDGET[GL Accounts],12,1)="4",
+    LEFT(FY24_BUDGET[GL Accounts],1)="0")
+
+VAR GFExpense=
+CALCULATETABLE(
+    SELECTCOLUMNS(
+        FY24_BUDGET,
+        "Fund", "General Fund",
+        "Fiscal Year", FY24_BUDGET[Fiscal Year],
+        "GL Accounts", FY24_BUDGET[GL Accounts],
+        "Amount", FY24_BUDGET[Amount]
+    ),
+    MID(FY24_BUDGET[GL Accounts],12,1)<>"4",
+    LEFT(FY24_BUDGET[GL Accounts],1)="0")
+
+
+VAR GFNetSurplus = 
+CALCULATETABLE(
+SELECTCOLUMNS(
+    FY24_BUDGET,
+    "Fund", "General Fund Net Surplus",
+    "Fiscal Year", FY24_BUDGET[Fiscal Year],
+    "GL Accounts", LEFT(FY24_BUDGET[GL Accounts],11)&"N_SU",
+    "Amount", -FY24_BUDGET[Amount]
+),
+ LEFT(FY24_BUDGET[GL Accounts],1)="0")
+
+VAR AUXFund = 
+CALCULATETABLE(
+SELECTCOLUMNS(
+    FY24_BUDGET,
+    "Fund", "Auxiliary Fund Net Surplus",
+    "Fiscal Year", FY24_BUDGET[Fiscal Year],
+    "GL Accounts", LEFT(FY24_BUDGET[GL Accounts],11)&"N_SU",
+    "Amount", -FY24_BUDGET[Amount]
+),
+ LEFT(FY24_BUDGET[GL Accounts],1)="1")
+
+VAR RESFund = 
+CALCULATETABLE(
+SELECTCOLUMNS(
+    FY24_BUDGET,
+    "Fund", "Restricted Fund Net Surplus",
+    "Fiscal Year", FY24_BUDGET[Fiscal Year],
+    "GL Accounts", LEFT(FY24_BUDGET[GL Accounts],11)&"N_SU",
+    "Amount", -FY24_BUDGET[Amount]
+),
+ LEFT(FY24_BUDGET[GL Accounts],1)="2")
+
+VAR PLFund = 
+CALCULATETABLE(
+SELECTCOLUMNS(
+    FY24_BUDGET,
+    "Fund", "Plant Fund Net Surplus",
+    "Fiscal Year", FY24_BUDGET[Fiscal Year],
+    "GL Accounts", LEFT(FY24_BUDGET[GL Accounts],11)&"N_SU",
+    "Amount", -FY24_BUDGET[Amount]
+),
+ LEFT(FY24_BUDGET[GL Accounts],1)="7")
+
+VAR NetSurplus = 
+SELECTCOLUMNS(
+    FY24_BUDGET,
+    "Fund", "Net Surplus",
+    "Fiscal Year", FY24_BUDGET[Fiscal Year],
+    "GL Accounts", LEFT(FY24_BUDGET[GL Accounts],11)&"N_SU",
+    "Amount", -FY24_BUDGET[Amount]
+)
+
+
+
+VAR FY24CorrectSigns2 = 
+UNION(GFRevenue,GFExpense,GFNetSurplus,AUXFund,RESFund,PLFund, NetSurplus)
+
+RETURN FY24CorrectSigns2
